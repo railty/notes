@@ -11,6 +11,32 @@
     <NavTitleLarge>notes</NavTitleLarge>
   </Navbar>
 
+  <BlockTitle>Card</BlockTitle>
+  <Card class="demo-card-header-pic">
+      <CardHeader style="justify-content: space-between;">
+        <div style="display:flex;justify-content: flex-start;">
+          <Button>Save</Button>
+          <Button>Save</Button>
+        </div>
+        <div>Note</div>
+        <div style="display:flex;justify-content: flex-end;">
+          <Button>Save</Button>
+          <Button>Refresh</Button>
+        </div>
+      </CardHeader>
+
+      <CardContent>
+        {@html html}
+      </CardContent>
+      
+      <CardFooter>
+        <Link>Like</Link>
+        <Link>Like</Link>
+        <Link>Read more</Link>
+      </CardFooter>
+    </Card>
+
+
   <BlockTitle>Custom Button</BlockTitle>
   <BlockHeader>It is possible to create custom editor buttons. Here is the custom "hr" button that adds horizontal rule:</BlockHeader>
   <TextEditor resizable customButtons={{
@@ -22,8 +48,18 @@
       onClick(event, buttonEl) {
         document.execCommand('insertHorizontalRule', false);
       }
-    }}}
-    buttons={['bold', 'italic', 'hr']}
+    },
+    save: {
+      // button html content
+      content: 'Save',
+      // button click handler
+      onClick(event, buttonEl) {
+        console.log("11111");
+        save(event.value);
+      }
+    },    
+    }}
+    buttons={['bold', 'italic', 'hr', 'save']}
   />
 
   <Block strong>
@@ -40,12 +76,11 @@
     </Row>
   </Block>
 
-  <List>
-    <ListInput type="textarea" label="Note" placeholder="Note" resizable/>
-    <ListItem>
-      {html}
-    </ListItem>
-  </List>
+  <div >
+    <div>
+      {@html html}
+    </div>
+  </div>
 
 
   <BlockTitle>Navigation</BlockTitle>
@@ -74,7 +109,8 @@
     Button,
     ListInput,
     BlockHeader,
-    TextEditor
+    TextEditor,
+    Card, CardContent, CardHeader, CardFooter
   } from 'framework7-svelte';
 
   let html = "";
@@ -82,4 +118,9 @@
   function redraw(){
     console.log("redraw");
   }
+  function save(v){
+    html = v;
+    console.log("save");
+  }
+
 </script>
