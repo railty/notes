@@ -1,4 +1,4 @@
-<Page name="home">
+<Page bgColor="gray" name="home">
   <!-- Top Navbar -->
   <Navbar large sliding={false}>
     <NavLeft>
@@ -12,87 +12,41 @@
   </Navbar>
 
   <BlockTitle>Card</BlockTitle>
-  <Card class="demo-card-header-pic">
-      <CardHeader style="justify-content: space-between;">
-        <div style="display:flex;justify-content: flex-start;">
-          <Button>Save</Button>
-          <Button>Save</Button>
-        </div>
-        <div>Note</div>
-        <div style="display:flex;justify-content: flex-end;">
-          <Button>Save</Button>
-          <Button>Refresh</Button>
-        </div>
-      </CardHeader>
 
-      <CardContent>
-        {@html html}
-      </CardContent>
-      
-      <CardFooter>
-        <Link>Like</Link>
-        <Link>Like</Link>
-        <Link>Read more</Link>
-      </CardFooter>
-    </Card>
+  <Link href="#555" animate={true} ignoreCache={true} on:click={onclick}>555</Link>
 
+  {#each notes as note, idx}  
+    <Note 
+      bind:note={note} 
+      save={save} 
+      createNote={(title)=>{createNote(title, idx)}} 
+      removeNote={(e)=>{removeNote(idx)}}
+      showHtml={(e)=>{showHtml(idx)}}
+    />
+  {/each}
 
-  <BlockTitle>Custom Button</BlockTitle>
-  <BlockHeader>It is possible to create custom editor buttons. Here is the custom "hr" button that adds horizontal rule:</BlockHeader>
-  <TextEditor resizable customButtons={{
-    // property key is the button id
-    hr: {
-      // button html content
-      content: '&lt;hr&gt;',
-      // button click handler
-      onClick(event, buttonEl) {
-        document.execCommand('insertHorizontalRule', false);
-      }
-    },
-    save: {
-      // button html content
-      content: 'Save',
-      // button click handler
-      onClick(event, buttonEl) {
-        console.log("11111");
-        save(event.value);
-      }
-    },    
-    }}
-    buttons={['bold', 'italic', 'hr', 'save']}
-  />
-
-  <Block strong>
-    <Row>
-      <Col>
-        <Button fill on:click={redraw}>Redraw</Button>
-      </Col>
-      <Col>
-        <Button fill>Button</Button>
-      </Col>
-      <Col>
-        <Button fill round>Round</Button>
-      </Col>
-    </Row>
-  </Block>
-
-  <div >
-    <div>
-      {@html html}
-    </div>
-  </div>
-
-
-  <BlockTitle>Navigation</BlockTitle>
-  <List>
-    <ListItem link="/about/" title="About"/>
-    <ListItem link="/form/" title="Form"/>
-  </List>
-
+  <Popup bind:this={popup}>
+    <Page>
+      <Card>
+        <CardContent>
+          <BlockTitle>Title</BlockTitle>
+            <Input type="textarea" value={html} />
+        </CardContent>
+        <CardFooter>
+          <Button on:click={closePopup}>OK</Button>
+          <Button on:click={closePopup}>Cancel</Button>
+        </CardFooter>
+      </Card>
+    </Page>
+  </Popup>
 </Page>
+
+
 <script>
+  import { onMount } from 'svelte';
   import {
-    Page,
+    f7, 
+    Page, Popup,
     Navbar,
     NavLeft,
     NavTitle,
@@ -107,20 +61,89 @@
     Row,
     Col,
     Button,
-    ListInput,
+    ListInput, Input,
     BlockHeader,
     TextEditor,
     Card, CardContent, CardHeader, CardFooter
   } from 'framework7-svelte';
 
-  let html = "";
+  import Note from "../components/note.svelte";
+  let popup;
 
-  function redraw(){
-    console.log("redraw");
-  }
-  function save(v){
-    html = v;
+  let notes = [{
+    editing: false,
+    title: "Home",
+    value: "",
+    editor: null
+  }, {
+    editing: false,
+    value: "",
+    editor: null
+  }, {
+    editing: false,
+    value: "",
+    editor: null
+  }, {
+    editing: false,
+    value: "",
+    editor: null
+  },
+  ];
+
+  function save(){
     console.log("save");
+    f7.form.storeFormData("#notes", notes);
   }
+
+  function load(){
+    notes = f7.form.getFormData("#notes");
+    console.log(notes);
+  }
+
+	onMount(async () => {
+    console.log("onmount");
+		load();
+  });    
+  
+  function openPopup(){
+    popup.open(true);
+  }
+
+  function closePopup(){
+    popup.close(true);
+  }
+
+  function removeNote(idx){
+    console.log(idx);
+    notes = [...notes.slice(0,idx), ...notes.slice(idx+1, notes.length)];
+  }
+
+  function createNote(title, idx){
+    //console.log(title);
+    //console.log(idx);
+
+    notes = [...notes.slice(0,idx), {
+      editing: false,
+      title: title,
+      value: "",
+      editor: null
+    }, ...notes.slice(idx, notes.length)];
+  }
+
+  let html;
+  function showHtml(idx){
+    console.log(notes[idx].value);
+    html = notes[idx].value;
+    popup.open(true);
+  }
+
+
+function onclick(event) 
+{
+  event.preventDefault();
+  let o = document.getElementById("555");
+  o.scrollIntoView({behavior: "smooth", block: "start", inline: "nearest"});
+
+}
 
 </script>
